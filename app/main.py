@@ -1,3 +1,99 @@
-def shop_trip():
-    # write your code here
-    pass
+import datetime
+from app.car import Car
+from app.customer import Customer
+from app.shop import Shop
+import json
+
+
+def shop_trip() -> None:
+    with open("app/config.json", "r") as f:
+        infos = json.load(f)
+
+    fuel_price = infos["FUEL_PRICE"]
+
+    customers = []
+    for data in infos["customers"]:
+        car = Car(
+            brand=data["car"]["brand"],
+            fuel_consumption=data["car"]["fuel_consumption"]
+        )
+
+        customer = Customer(
+            person_name=data["name"],
+            product_cart=data["product_cart"],
+            person_location=data["location"],
+            money=data["money"],
+            car=car
+        )
+        customers.append(customer)
+
+    shops = []
+    for data in infos["shops"]:
+        shop = Shop(
+            shop_name=data["name"],
+            shop_location=data["location"],
+            products=data["products"]
+        )
+        shops.append(shop)
+
+    for customer in customers:
+        print(f"{customer.person_name} has {customer.money} dollars")
+
+        best_shop = None
+        best_cost = None
+        home_location = customer.person_location
+
+        for shop in shops:
+            if not shop.can_sell(customer.product_cart):
+                continue
+
+            products_price = shop.products_cost(customer.product_cart)
+            fuel_to_shop = customer.car.fuel_cost(
+                home_location,
+                shop.shop_location,
+                fuel_price
+            )
+
+            fuel_to_home = customer.car.fuel_cost(
+                shop.shop_location,
+                home_location,
+                fuel_price
+            )
+
+            total_cost = round(fuel_to_shop + fuel_to_home + products_price, 2)
+            print(
+                f"{customer.person_name}'s trip to the {shop.shop_name} "
+                f"costs {total_cost}"
+            )
+
+            if best_cost is None or total_cost < best_cost:
+                best_cost = total_cost
+                best_shop = shop
+
+        if best_cost is None or total_cost > customer.money:
+            print(
+                f"{customer.person_name} doesn't have enough money "
+                "to make a purchase in any shop"
+            )
+            continue
+        print(f"{customer.person_name} rides to {best_shop.shop_name}")
+        customer.person_location = best_shop.shop_location
+
+        now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        print(f"\nDate: {now}")
+        print(f"Thanks, {customer.person_name}, for your purchase!")
+        print("You have bought:")
+        total_products_price = best_shop.products_cost(customer.product_cart)
+
+        for product, quantity in customer.product_cart.items():
+            price = best_shop.products[product] * quantity
+            if price.is_integer():
+                price = int(price)
+            print(f"{quantity} {product}s for {price} dollars")
+        print(f"Total cost is {round(total_products_price, 2)} dollars")
+        print("See you again!\n")
+
+        print(f"{customer.person_name} rides home")
+        customer.person_location = home_location
+        customer.money = round(customer.money - best_cost, 2)
+        print(f"{customer.person_name} now has {customer.money} dollars\n")
