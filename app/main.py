@@ -97,7 +97,7 @@ def shop_trip() -> None:
         customer.person_location = home_location
         customer.money = round(customer.money - best_cost, 2)
         if customer.money.is_integer():
-            customer.money = int(customer.money)    
+            customer.money = int(customer.money)
         print(
             f"{customer.person_name} now has {customer.money} dollars\n"
         )
