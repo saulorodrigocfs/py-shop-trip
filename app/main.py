@@ -6,8 +6,8 @@ import json
 
 
 def shop_trip() -> None:
-    with open("app/config.json", "r") as f:
-        infos = json.load(f)
+    with open("config.json", "r") as config:
+        infos = json.load(config)
 
     fuel_price = infos["FUEL_PRICE"]
 
@@ -60,10 +60,10 @@ def shop_trip() -> None:
                 fuel_price
             )
 
-            total_cost = round(fuel_to_shop + fuel_to_home + products_price, 2)
+            total_cost = fuel_to_shop + fuel_to_home + products_price
             print(
                 f"{customer.person_name}'s trip to the {shop.shop_name} "
-                f"costs {total_cost}"
+                f"costs {total_cost:.2f}"
             )
 
             if best_cost is None or total_cost < best_cost:
@@ -79,8 +79,9 @@ def shop_trip() -> None:
         print(f"{customer.person_name} rides to {best_shop.shop_name}")
         customer.person_location = best_shop.shop_location
 
+        print()
         now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        print(f"\nDate: {now}")
+        print(f"Date: {now}")
         print(f"Thanks, {customer.person_name}, for your purchase!")
         print("You have bought:")
         total_products_price = best_shop.products_cost(customer.product_cart)
@@ -90,14 +91,12 @@ def shop_trip() -> None:
             if price.is_integer():
                 price = int(price)
             print(f"{quantity} {product}s for {price} dollars")
-        print(f"Total cost is {round(total_products_price, 2)} dollars")
+        print(f"Total cost is {total_products_price} dollars")
         print("See you again!\n")
 
         print(f"{customer.person_name} rides home")
         customer.person_location = home_location
-        customer.money = round(customer.money - best_cost, 2)
-        if customer.money.is_integer():
-            customer.money = int(customer.money)
+        customer.money = customer.money - best_cost
         print(
-            f"{customer.person_name} now has {customer.money} dollars\n"
+            f"{customer.person_name} now has {customer.money:.2f} dollars\n"
         )
