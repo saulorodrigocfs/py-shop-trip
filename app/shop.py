@@ -21,5 +21,9 @@ class Shop:
     def products_cost(self, product_cart: Dict[str, int]) -> float:
         total = 0
         for product, quantity in product_cart.items():
+            if product not in self.products:
+                raise ValueError(
+                    f"Product {product} not available in shop {self.shop_name}"
+                )
             total += self.products[product] * quantity
         return round(total, 2)

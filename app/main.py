@@ -1,7 +1,7 @@
 import datetime
-from car import Car
-from customer import Customer
-from shop import Shop
+from app.car import Car
+from app.customer import Customer
+from app.shop import Shop
 import json
 
 
@@ -37,7 +37,7 @@ def shop_trip() -> None:
         shops.append(shop)
 
     for customer in customers:
-        print(f"{customer.person_name} has {customer.money} dollars")
+        print(f"# {customer.person_name} has {customer.money:.2f} dollars")
 
         best_shop = None
         best_cost = None
@@ -62,8 +62,8 @@ def shop_trip() -> None:
 
             total_cost = round(fuel_to_shop + fuel_to_home + products_price, 2)
             print(
-                f"{customer.person_name}'s trip to the {shop.shop_name} "
-                f"costs {total_cost}"
+                f"# {customer.person_name}'s trip to the {shop.shop_name} "
+                f"costs {total_cost:.2f}"
             )
 
             if best_cost is None or total_cost < best_cost:
@@ -72,28 +72,28 @@ def shop_trip() -> None:
 
         if best_cost is None or best_cost > customer.money:
             print(
-                f"{customer.person_name} doesn't have enough money "
+                f"# {customer.person_name} doesn't have enough money "
                 "to make a purchase in any shop"
             )
             continue
-        print(f"{customer.person_name} rides to {best_shop.shop_name}")
+        print(f"# {customer.person_name} rides to {best_shop.shop_name}")
         customer.person_location = best_shop.shop_location
 
         now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        print(f"\nDate: {now}")
-        print(f"Thanks, {customer.person_name}, for your purchase!")
-        print("You have bought:")
+        print(f"# Date: {now}")
+        print(f"# Thanks, {customer.person_name}, for your purchase!")
+        print("# You have bought:")
         total_products_price = best_shop.products_cost(customer.product_cart)
 
         for product, quantity in customer.product_cart.items():
             price = best_shop.products[product] * quantity
             if price.is_integer():
                 price = int(price)
-            print(f"{quantity} {product}s for {price} dollars")
-        print(f"Total cost is {round(total_products_price, 2)} dollars")
-        print("See you again!\n")
+            print(f"# {quantity} {product}s for {price} dollars")
+        print(f"# Total cost is {round(total_products_price, 2)} dollars")
+        print("# See you again!\n")
 
         print(f"{customer.person_name} rides home")
         customer.person_location = home_location
         customer.money = round(customer.money - best_cost, 2)
-        print(f"{customer.person_name} now has {customer.money} dollars\n")
+        print(f"# {customer.person_name} now has {customer.money:.2f} dollars\n")
