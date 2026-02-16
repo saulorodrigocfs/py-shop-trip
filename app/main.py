@@ -1,12 +1,12 @@
 import datetime
-from app.car import Car
-from app.customer import Customer
-from app.shop import Shop
+from car import Car
+from customer import Customer
+from shop import Shop
 import json
 
 
 def shop_trip() -> None:
-    with open("app/config.json", "r") as f:
+    with open("config.json", "r") as f:
         infos = json.load(f)
 
     fuel_price = infos["FUEL_PRICE"]
@@ -70,7 +70,7 @@ def shop_trip() -> None:
                 best_cost = total_cost
                 best_shop = shop
 
-        if best_cost is None or total_cost > customer.money:
+        if best_cost is None or best_cost > customer.money:
             print(
                 f"{customer.person_name} doesn't have enough money "
                 "to make a purchase in any shop"
