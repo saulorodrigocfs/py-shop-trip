@@ -96,4 +96,6 @@ def shop_trip() -> None:
         print(f"{customer.person_name} rides home")
         customer.person_location = home_location
         customer.money = round(customer.money - best_cost, 2)
-        print(f"# {customer.person_name} now has {customer.money:.2f} dollars\n")
+        print(
+            f"# {customer.person_name} now has {customer.money:.2f} dollars\n"
+        )
